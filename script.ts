@@ -1,25 +1,34 @@
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 
+const gslider = <HTMLInputElement>document.getElementById("gslider");
+const kslider = <HTMLInputElement>document.getElementById("kslider");
+const mslider = <HTMLInputElement>document.getElementById("mslider");
+
+const gvalue = <HTMLInputElement>document.getElementById("gvalue");
+const kvalue = <HTMLInputElement>document.getElementById("kvalue");
+const mvalue = <HTMLInputElement>document.getElementById("mvalue");
+
 let ps: Array<[ number, number ]> = [];
 
 const frameRate = 60;
 const stepsPerFrame = 10000;
 
 const topX = 500;
-const topY = 50;
+const topY = 250;
 const mult = 20;
-const g = 10;
-const k = 20;
+var g = 10;
+var k = 20;
 const a = 10;
-const m = 2;
+var m = 3;
 
-let r = 11;
-let angle = Math.PI * 8 / 20;
+let r = 11.5;
+let angle = Math.PI * 6 / 20;
 
 let dr = 0, ddr = 0;
 let da = 0, dda = 0;
 let x: number, y: number;
+
 
 calculate();
 function calculate(): void {
@@ -28,10 +37,11 @@ function calculate(): void {
 }
 
 function draw(): void {
+    updateValues();
     calculate();
     clear();
     ctx.fillStyle = "brown"
-    ctx.fillRect(0, 50 - 10, canvas.width, 10);
+    ctx.fillRect(0, topY - 10, canvas.width, 10);
     ctx.beginPath();
     for (let i = Math.max(0, ps.length - 2000); i < ps.length; i++) {
         if (i == Math.max(0, ps.length - 2000)) ctx.moveTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
@@ -73,18 +83,18 @@ function step(seconds: number, count: number): void {
         angle += da * seconds / count;
         r += dr * seconds / count;
 
-        if (angle > Math.PI / 2) {
-            da *= -1;
-            angle = Math.PI / 2 - (angle - Math.PI);
-        }
-        if (angle < -Math.PI / 2) {
-            da *= -1;
-            angle = -Math.PI / 2 - (angle + Math.PI);
-        }
-
     }
 }
+function updateValues(): void {
+    mvalue.innerText = String(m);
+    kvalue.innerText = String(k);
+    gvalue.innerText = String(g);
 
+    g = Number(gslider.value);
+    k = Number(kslider.value);
+    m = Number(mslider.value);
+
+}
 setInterval(() => {
     draw();
 }, 1 / frameRate);
