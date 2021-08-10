@@ -37,7 +37,7 @@ function draw(): void {
         if (i == Math.max(0, ps.length - 2000)) ctx.moveTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
         else ctx.lineTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
     }
-    ctx.strokeStyle = "cyan";
+    ctx.strokeStyle = "magenta";
     ctx.stroke();
     if (ps.length > 50000) ps = ps.slice(ps.length - 5000, ps.length - 1);
     fillCircle(topX, topY, 5, "blue");
