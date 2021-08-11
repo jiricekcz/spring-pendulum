@@ -9,6 +9,8 @@ const gvalue = <HTMLInputElement>document.getElementById("gvalue");
 const kvalue = <HTMLInputElement>document.getElementById("kvalue");
 const mvalue = <HTMLInputElement>document.getElementById("mvalue");
 
+const url = new URLSearchParams(window.location.search);
+
 let ps: Array<[ number, number ]> = [];
 
 const frameRate = 60;
@@ -17,10 +19,18 @@ const stepsPerFrame = 1000;
 const topX = 500;
 const topY = 250;
 const mult = 20;
-var g = 5;
-var k = 20;
+var g = Number(url.get("g"));
+if (Number.isNaN(g)) g = 5;
+var k = Number(url.get("k"));
+if (Number.isNaN(k)) k = 5;
 const a = 10;
-var m = 3;
+var m = Number(url.get("m"));
+if (Number.isNaN(m)) m = m;
+
+mslider.value = String(m);
+kslider.value = String(k);
+gslider.value = String(g);
+
 
 let r = 13.5;
 let angle = Math.PI * 6 / 20;
