@@ -54,13 +54,12 @@ function draw(): void {
     fillCircle(x, y, 5);
     ctx.strokeStyle = "green";
     ctx.beginPath();
-    ctx.moveTo(topX, topY);
-    ctx.lineTo(x, y);
+    drawSpring(topX, topY, x, y, 20, 40);
     ctx.stroke();
 
     ctx.save();
     ctx.fillStyle = "green";
-    ctx.fillRect(1200, 600, 100, getEnergy() / 300 * 600)    
+    ctx.fillRect(1200, 600, 100, getEnergy() / 300 * 600)
     ctx.restore();
 
     ps.push([ x, y ]);
@@ -104,6 +103,40 @@ function updateValues(): void {
     m = Number(mslider.value);
 
 }
+
+function drawSpring(x1: number, y1: number, x2: number, y2: number, width: number, segments: number): void {
+    const length = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+    const segmentLength = length / segments;
+
+    // Straight spring
+    let points: Array<[ number, number ]> = [ [ 0, 0 ] ];
+    for (let i = 1; i <= segments; i++) {
+        points.push([ i * segmentLength - segmentLength / 2, width / 2 * (i % 2 == 0 ? -1 : 1) ]);
+        points.push([ i * segmentLength, 0 ]);
+    }
+
+    // Rotate
+    points = points.map(([ x, y ]) => {
+        const sin = (y2 - y1) / length;
+        const cos = (x2 - x1) / length;
+        return [ cos * x - sin * y, cos * y + sin * x ];
+    });
+    
+    //Move
+    points = points.map(([ x, y ]) => [ x + x1, y + y1 ]);
+
+
+
+    ctx.save();
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(...points[ 0 ]);
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(...points[ i ]);
+    }
+    ctx.stroke();
+    ctx.restore();
+}
 setInterval(() => {
     draw();
-}, 1 / frameRate);
+}, 1000 / frameRate);
