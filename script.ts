@@ -22,7 +22,7 @@ var k = 20;
 const a = 10;
 var m = 3;
 
-let r = 11.5;
+let r = 13.5;
 let angle = Math.PI * 6 / 20;
 
 let dr = 0, ddr = 0;
@@ -35,21 +35,24 @@ function calculate(): void {
     x = topX + Math.sin(angle) * mult * r;
     y = topY + Math.cos(angle) * mult * r;
 }
-
+var frame = 0;
 function draw(): void {
+    frame++;
     updateValues();
     calculate();
     clear();
+    ctx.font = "48px Arial";
+    ctx.fillText(`FPS: ${Math.round(currentFrameRate)}`, 30, 200);
     ctx.fillStyle = "brown"
     ctx.fillRect(0, topY - 10, canvas.width, 10);
     ctx.beginPath();
-    for (let i = Math.max(0, ps.length - 2000); i < ps.length; i++) {
-        if (i == Math.max(0, ps.length - 2000)) ctx.moveTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
+    for (let i = Math.max(0, ps.length - 12000); i < ps.length; i++) {
+        if (i == Math.max(0, ps.length - 12000)) ctx.moveTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
         else ctx.lineTo(ps[ i ][ 0 ], ps[ i ][ 1 ]);
     }
     ctx.strokeStyle = "magenta";
     ctx.stroke();
-    if (ps.length > 50000) ps = ps.slice(ps.length - 5000, ps.length - 1);
+    if (ps.length > 50000) ps = ps.slice(ps.length - 25000, ps.length - 1);
     fillCircle(topX, topY, 5, "blue");
     fillCircle(x, y, 5);
     ctx.strokeStyle = "green";
@@ -63,7 +66,7 @@ function draw(): void {
     ctx.restore();
 
     ps.push([ x, y ]);
-    step(1 / frameRate, stepsPerFrame);
+    step(1 / currentFrameRate, stepsPerFrame);
 }
 function getEnergy(): number {
     return 1 / 2 * m * dr ** 2 + 1 / 2 * m * r ** 2 * da ** 2 + 1 / 2 * k * (r - a) ** 2 - m * g * r * Math.cos(angle);
@@ -121,7 +124,7 @@ function drawSpring(x1: number, y1: number, x2: number, y2: number, width: numbe
         const cos = (x2 - x1) / length;
         return [ cos * x - sin * y, cos * y + sin * x ];
     });
-    
+
     //Move
     points = points.map(([ x, y ]) => [ x + x1, y + y1 ]);
 
@@ -137,6 +140,12 @@ function drawSpring(x1: number, y1: number, x2: number, y2: number, width: numbe
     ctx.stroke();
     ctx.restore();
 }
+var lastFrameTime = Date.now();
+var currentFrameRate = frameRate;
 setInterval(() => {
+    if (frame % 10 == 0) {
+        currentFrameRate = 10000 / (Date.now() - lastFrameTime)
+        lastFrameTime = Date.now();
+    }
     draw();
 }, 1000 / frameRate);

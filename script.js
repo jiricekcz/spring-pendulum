@@ -17,7 +17,7 @@ var g = 5;
 var k = 20;
 const a = 10;
 var m = 3;
-let r = 11.5;
+let r = 13.5;
 let angle = Math.PI * 6 / 20;
 let dr = 0, ddr = 0;
 let da = 0, dda = 0;
@@ -27,15 +27,19 @@ function calculate() {
     x = topX + Math.sin(angle) * mult * r;
     y = topY + Math.cos(angle) * mult * r;
 }
+var frame = 0;
 function draw() {
+    frame++;
     updateValues();
     calculate();
     clear();
+    ctx.font = "48px Arial";
+    ctx.fillText(`FPS: ${Math.round(currentFrameRate)}`, 30, 200);
     ctx.fillStyle = "brown";
     ctx.fillRect(0, topY - 10, canvas.width, 10);
     ctx.beginPath();
-    for (let i = Math.max(0, ps.length - 2000); i < ps.length; i++) {
-        if (i == Math.max(0, ps.length - 2000))
+    for (let i = Math.max(0, ps.length - 12000); i < ps.length; i++) {
+        if (i == Math.max(0, ps.length - 12000))
             ctx.moveTo(ps[i][0], ps[i][1]);
         else
             ctx.lineTo(ps[i][0], ps[i][1]);
@@ -43,7 +47,7 @@ function draw() {
     ctx.strokeStyle = "magenta";
     ctx.stroke();
     if (ps.length > 50000)
-        ps = ps.slice(ps.length - 5000, ps.length - 1);
+        ps = ps.slice(ps.length - 25000, ps.length - 1);
     fillCircle(topX, topY, 5, "blue");
     fillCircle(x, y, 5);
     ctx.strokeStyle = "green";
@@ -55,7 +59,7 @@ function draw() {
     ctx.fillRect(1200, 600, 100, getEnergy() / 300 * 600);
     ctx.restore();
     ps.push([x, y]);
-    step(1 / frameRate, stepsPerFrame);
+    step(1 / currentFrameRate, stepsPerFrame);
 }
 function getEnergy() {
     return 1 / 2 * m * Math.pow(dr, 2) + 1 / 2 * m * Math.pow(r, 2) * Math.pow(da, 2) + 1 / 2 * k * Math.pow((r - a), 2) - m * g * r * Math.cos(angle);
@@ -92,16 +96,19 @@ function updateValues() {
 function drawSpring(x1, y1, x2, y2, width, segments) {
     const length = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     const segmentLength = length / segments;
+    // Straight spring
     let points = [[0, 0]];
     for (let i = 1; i <= segments; i++) {
         points.push([i * segmentLength - segmentLength / 2, width / 2 * (i % 2 == 0 ? -1 : 1)]);
         points.push([i * segmentLength, 0]);
     }
+    // Rotate
     points = points.map(([x, y]) => {
         const sin = (y2 - y1) / length;
         const cos = (x2 - x1) / length;
         return [cos * x - sin * y, cos * y + sin * x];
     });
+    //Move
     points = points.map(([x, y]) => [x + x1, y + y1]);
     ctx.save();
     ctx.strokeStyle = "black";
@@ -113,6 +120,12 @@ function drawSpring(x1, y1, x2, y2, width, segments) {
     ctx.stroke();
     ctx.restore();
 }
+var lastFrameTime = Date.now();
+var currentFrameRate = frameRate;
 setInterval(() => {
+    if (frame % 10 == 0) {
+        currentFrameRate = 10000 / (Date.now() - lastFrameTime);
+        lastFrameTime = Date.now();
+    }
     draw();
 }, 1000 / frameRate);
