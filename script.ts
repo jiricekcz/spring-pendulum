@@ -12,12 +12,12 @@ const mvalue = <HTMLInputElement>document.getElementById("mvalue");
 let ps: Array<[ number, number ]> = [];
 
 const frameRate = 60;
-const stepsPerFrame = 10000;
+const stepsPerFrame = 1000;
 
 const topX = 500;
 const topY = 250;
 const mult = 20;
-var g = 10;
+var g = 5;
 var k = 20;
 const a = 10;
 var m = 3;
@@ -57,8 +57,17 @@ function draw(): void {
     ctx.moveTo(topX, topY);
     ctx.lineTo(x, y);
     ctx.stroke();
+
+    ctx.save();
+    ctx.fillStyle = "green";
+    ctx.fillRect(1200, 600, 100, getEnergy() / 300 * 600)    
+    ctx.restore();
+
     ps.push([ x, y ]);
     step(1 / frameRate, stepsPerFrame);
+}
+function getEnergy(): number {
+    return 1 / 2 * m * dr ** 2 + 1 / 2 * m * r ** 2 * da ** 2 + 1 / 2 * k * (r - a) ** 2 - m * g * r * Math.cos(angle);
 }
 function fillCircle(x: number, y: number, r: number, color = "black"): void {
     ctx.save();
@@ -74,8 +83,8 @@ function clear(): void {
 }
 function step(seconds: number, count: number): void {
     for (let i = 0; i < count; i++) {
-        dda = (-2 * dr * da * da - g * Math.sin(angle)) / r;
-        ddr = r * da + g * Math.cos(angle) - (k * (r - a)) / m;
+        dda = (-2 * dr * da - g * Math.sin(angle)) / r;
+        ddr = r * da ** 2 + g * Math.cos(angle) - (k * (r - a)) / m;
 
         da += dda * seconds / count;
         dr += ddr * seconds / count;
