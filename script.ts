@@ -20,12 +20,12 @@ const topX = 500;
 const topY = 250;
 const mult = 20;
 var g = Number(url.get("g"));
-if (Number.isNaN(g)) g = 5;
+if (Number.isNaN(g) || g == 0) g = 10;
 var k = Number(url.get("k"));
-if (Number.isNaN(k)) k = 5;
+if (Number.isNaN(k)|| k == 0) k = 40;
 const a = 10;
 var m = Number(url.get("m"));
-if (Number.isNaN(m)) m = m;
+if (Number.isNaN(m)|| m == 0) m = 2;
 
 mslider.value = String(m);
 kslider.value = String(k);
